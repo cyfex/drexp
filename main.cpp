@@ -7,6 +7,7 @@
 #include <cstdarg>
 #include <cassert>
 #define GL_LOG_FILE "gl.log"
+#include "mesh.h"
 
 // keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 640;
@@ -144,6 +145,7 @@ void glfw_window_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 int main() {
+    // openGL code starts here
     assert(restart_gl_log());
     // start GL context and O/S window using the GLFW helper library
     gl_log("starting GLFW\n%s\n", glfwGetVersionString());
@@ -190,7 +192,9 @@ int main() {
     glDepthFunc(GL_LESS); // depth-testing interprets a smaller value as "closer"
 
     /* OTHER STUFF GOES HERE NEXT */
-    GLfloat points[] = {
+    // load mesh
+    mesh my_mesh("knot.m");
+    /*GLfloat points[] = {
         0.0f,   0.5f,   0.0f,
         0.5f,   -0.5f,  0.0f,
         -0.5f,  -0.5f,  0.0f
@@ -207,13 +211,17 @@ int main() {
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glBindVertexArray(0);*/
 
     // Shaders
     // Initializing shaders
     const char* vertex_shader =
     "#version 400\n"
-    "in vec3 vp;"
+    "layout(location = 0) in vec3 vp;"
+    "layout(location = 1) in vec3 vn;"
+    "out vec3 vertex_normal;"
     "void main() {"
+    "   vertex_normal = vn;"
     "   gl_Position = vec4(vp, 1.0);"
     "}";
     const char* fragment_shader =
@@ -243,9 +251,13 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, g_gl_width, g_gl_height);
         glUseProgram(shader_programme);
-        glBindVertexArray(vao);
         // draw points 0-3 from the currently bound VAO with current in-use shader
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindVertexArray(vao);
+        //glDrawArrays(GL_TRIANGLES, 0, 3);
+        //glBindVertexArray(0);
+
+        // draw my mesh
+        my_mesh.draw();
         // update other events like input handling
         glfwPollEvents();
         // put the stuff we've been drawing onto the display
