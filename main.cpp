@@ -8,6 +8,7 @@
 #include <cassert>
 #define GL_LOG_FILE "gl.log"
 #include "mesh.h"
+#include "Shader.h"
 
 // keep track of window size for things like the viewport and the mouse cursor
 int g_gl_width = 640;
@@ -215,20 +216,39 @@ int main() {
 
     // Shaders
     // Initializing shaders
-    const char* vertex_shader =
+    /*const char* vertex_shader =
     "#version 400\n"
     "layout(location = 0) in vec3 vp;"
     "layout(location = 1) in vec3 vn;"
     "out vec3 vertex_normal;"
+    "out vec3 frag_pos;"
     "void main() {"
     "   vertex_normal = vn;"
     "   gl_Position = vec4(vp, 1.0);"
+    "   frage_pos = vp;"
     "}";
-    const char* fragment_shader =
+    /*const char* fragment_shader =
     "#version 400\n"
+    "in vec3 vertex_normal;"
     "out vec4 frag_colour;"
+    "uniform vec3 light_pos;"
     "void main() {"
     "   frag_colour = vec4(0.5, 0.0, 0.5, 1.0);"
+    "}";*/
+    /*const char* fragment_shader =
+    "#version 400\n"
+    "in vec3 vertex_normal;"
+    "in vec3 frag_pos;"
+    "out vec4 frag_colour;"
+    "uniform vec3 light_pos;"
+    "void main() {"
+    "   vec3 object_colour = vec3(0.5, 0.0, 0.5);"
+    "   vec3 light_colour = vec3(0.0, 0.5, 0.0);"
+    "   vec3 light_direction = normalize(light_pos - frag_pos);"
+    "   float diff = max(dot(vertex_normal, 0.0));"
+    "   vec3 diffuse = diff * light_colour;"
+    "   vec3 result = diffuse * object_colour;"
+    "   frag_colour = vec4(result 1.0);"
     "}";
 
     // Load and compile shaders
@@ -245,12 +265,21 @@ int main() {
     glAttachShader(shader_programme, vs);
     glLinkProgram(shader_programme);
 
+    // The constant shader we use, so would not be updated every frame
+    glUseProgram(shader_programme);
+    GLint light_location = glGetUniformLocation(shader_programme, "light_pos");
+    glUniform3f(light_location, 1.0, 1.0, 1.0);*/
+    Shader shader_knot("vert_knot.glsl", "frag_knot.glsl");
+    shader_knot.use();
+    //shader_knot.test();
+    shader_knot.setVec3("light_position", vec3(1.0,1.0,1.0));
+    shader_knot.setVec3("view_position", vec3(0.0, 0.0, 1.0));
+
     while(!glfwWindowShouldClose(window)) {
         _update_fps_counter(window);
         // wipe the drawing surface clear
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glViewport(0, 0, g_gl_width, g_gl_height);
-        glUseProgram(shader_programme);
         // draw points 0-3 from the currently bound VAO with current in-use shader
         //glBindVertexArray(vao);
         //glDrawArrays(GL_TRIANGLES, 0, 3);

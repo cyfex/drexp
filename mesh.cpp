@@ -10,7 +10,7 @@
 
 using namespace glm;
 
-mesh::mesh(vector<vertex> vertices, vector<unsigned int> indices){
+mesh::mesh(vector<Vertex> vertices, vector<unsigned int> indices){
     this->vertices = vertices;
     this->indices = indices;
 
@@ -18,15 +18,15 @@ mesh::mesh(vector<vertex> vertices, vector<unsigned int> indices){
 }
 
 // comparison functions to find maximum and minimum
-static bool compare_x(vertex a, vertex b){
+static bool compare_x(Vertex a, Vertex b){
     return a.position.x < b.position.x;
 }
 
-static bool compare_y(vertex a, vertex b){
+static bool compare_y(Vertex a, Vertex b){
     return a.position.y < b.position.y;
 }
 
-static bool compare_z(vertex a, vertex b){
+static bool compare_z(Vertex a, Vertex b){
     return a.position.z < b.position.z;
 }
 
@@ -52,7 +52,7 @@ mesh::mesh(string filename){
                 // fist vertex
                 unsigned int useless;
                 sscanf(line.c_str(),"Vertex%u%f%f%f",&useless,&x,&y,&z);
-                vertices.push_back(vertex{vec3(x, y, z), vec3(0.0)});
+                vertices.push_back(Vertex{vec3(x, y, z), vec3(0.0)});
                 // loop
                 is_vertex=true;
             }
@@ -101,7 +101,7 @@ mesh::mesh(string filename){
                 float x=0,y=0,z=0;
                 unsigned int useless;
                 sscanf(line.c_str(),"Vertex%u%f%f%f",&useless,&x,&y,&z);
-                vertices.push_back(vertex{vec3(x, y, z), vec3(0.0)});
+                vertices.push_back(Vertex{vec3(x, y, z), vec3(0.0)});
             }
         }
     }
@@ -133,7 +133,7 @@ mesh::mesh(string filename){
     float max_ratio = (temp_range=range_x>range_y?range_x:range_y)>range_z?temp_range:range_z;
     printf("%f,%f,%f,%f,%f,%f\n", min_x, max_x, min_y, max_y, min_z, max_z);
     printf("%f,%f,%f,%f,%f,%f,%f\n",centroid_x, range_x, centroid_y, range_y, centroid_z, range_z, max_ratio);
-    for (vertex &a : vertices){
+    for (Vertex &a : vertices){
         a.position.x = (a.position.x-centroid_x)/max_ratio;
         a.position.y = (a.position.y-centroid_y)/max_ratio;
         a.position.z = (a.position.z-centroid_z)/max_ratio;
@@ -150,7 +150,7 @@ void mesh::setup_mesh_test(){
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), &vertices[0], GL_STATIC_DRAW);  
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), 
@@ -158,7 +158,7 @@ void mesh::setup_mesh_test(){
 
     // vertex positions
     glEnableVertexAttribArray(0);	
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
     glBindVertexArray(0);
 
@@ -171,7 +171,7 @@ void mesh::setup_mesh(){
 
     glBindVertexArray(vao);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(vertex), &vertices[0], GL_STATIC_DRAW);  
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);  
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), 
@@ -179,10 +179,10 @@ void mesh::setup_mesh(){
 
     // vertex positions
     glEnableVertexAttribArray(0);	
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
     // vertex normals
     glEnableVertexAttribArray(1);	
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(vertex), (void*)offsetof(vertex, normal));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_TRUE, sizeof(Vertex), (void*)offsetof(Vertex, normal));
 
     glBindVertexArray(0);
 }

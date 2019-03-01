@@ -2,16 +2,16 @@
 #define MESH_H
 #include <vector>
 #include <string>
-#include "vertex.h"
+#include "Vertex.h"
 
 using namespace std;
 
 class mesh {
     public:
         // mesh data
-        vector<vertex> vertices;
+        vector<Vertex> vertices;
         vector<unsigned int> indices;
-        mesh(vector<vertex> vertices, vector<unsigned int> indices);
+        mesh(vector<Vertex> vertices, vector<unsigned int> indices);
         mesh(string filename);
         void draw();
     private:
